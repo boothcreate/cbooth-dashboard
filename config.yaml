@@ -1,0 +1,265 @@
+# config.yaml — single source of truth.
+# Change something here, re-run the scripts, the dashboard follows.
+
+owner:
+  name: "Charles Booth"                      # your name, shown in the header
+  school: University of Vermont
+  term: Fall 2026
+  term_start: "2026-08-31"   # first day of classes -- synthesized recurring class
+                              # schedule blocks (see BUILD.md, "Class contact info &
+                              # synthesized schedule blocks") never show before this
+                              # date, even on a matching weekday. Keep in sync with
+                              # the "First day of classes" milestone below.
+
+# ---------------------------------------------------------------------------
+# Your classes.
+#
+# 'tag'   is the short code used everywhere: calendar chips, document
+#         filenames, deadline grouping. One vocabulary across the whole system.
+# 'match' is what to look for in the calendar event to recognise the class.
+#         Brightspace course names are often long ("NSCI 1100 A - Fall 2026"),
+#         so put a distinctive fragment here.
+# 'address' is OPTIONAL and blank by default on purpose — the dashboard never
+#         guesses one. Fill in a real, mapable address (building name is
+#         usually enough, e.g. "Innovation Hall, University of Vermont,
+#         Burlington VT") and every event/to-do tagged with this class gets a
+#         one-tap Apple Maps directions link, on the schedule block and on
+#         any reminder email, automatically — set it once here, not per to-do.
+# 'grades_url' is OPTIONAL and blank by default — the grades panel never
+#         guesses one either. It's that course's Brightspace "My Grades" page
+#         URL (open the course in Brightspace, click Grades, copy the address
+#         bar). Set it once here and `scripts/fetch_grades.py` picks it up —
+#         see BUILD.md, "Grades panel," which is scaffolding as of 2026-08-20:
+#         the scraper reaches the page but doesn't parse it yet.
+# 'brightspace_url' is OPTIONAL and blank by default (added 2026-08-23) —
+#         that course's Brightspace content/home page. Brightspace's calendar
+#         feed doesn't carry a URL for individual assignments (checked against
+#         your real feed — no VEVENT has a URL field), so this is a link to
+#         the course itself, not the specific assignment; shows as "Open in
+#         Brightspace" on that class's deadline items and schedule block.
+# 'instructor' is OPTIONAL (name/email/office/office_hours, all blank by
+#         default) — added 2026-08-21. Shows up when you click that class's
+#         schedule block on the dashboard. See BUILD.md, "Class contact info
+#         & synthesized schedule blocks."
+# 'same_class_as' is OPTIONAL (added 2026-08-23) — set it to another class's
+#         tag when THIS entry isn't really a separate course, just a second
+#         weekly meeting time for one you've already listed (this app has no
+#         way to give one class two meets/time/room blocks, so a second entry
+#         is how that's modeled). Confirmed 2026-08-23: CHEM-1400-EVE is the
+#         same Brightspace enrollment/grade as CHEM-1400, just its Monday
+#         evening session — CHEM-1400-L51 (the lab) is a genuinely separate
+#         Brightspace course, so it does NOT get this field. A class with
+#         same_class_as set: never gets scraped for its own grade (inherits
+#         the aliased class's instead), never shows its own row in the Grades
+#         panel, and inherits brightspace_url automatically if it doesn't set
+#         its own — see BUILD.md, "Same-class aliasing."
+#
+# IMPORTANT: run `python scripts/fetch_brightspace.py --inspect` FIRST and look
+# at real events from your feed before filling this in. Canvas puts the course
+# in CATEGORIES; Brightspace often folds it into SUMMARY instead. You need to
+# see which one yours does.
+# ---------------------------------------------------------------------------
+classes:
+- tag: PSYS-2100
+  name: "Learning, Cognition & Behavior"
+  match: ["PSYS 2100"]
+  meets: [Mon, Wed, Fri]
+  time: "12:00 pm - 12:50 pm"
+  room: FLEMIN 101
+  address: "61 Colchester Ave, Burlington, VT 05405"   # Fleming Museum
+  grades_url: "https://brightspace.uvm.edu/d2l/lms/grades/my_grades/main.d2l?ou=165488"
+  brightspace_url: "https://brightspace.uvm.edu/d2l/home/165488"
+  # From the Fall 2026 PSYS 2100 syllabus (2026-08-31). No personal faculty
+  # email was given -- the syllabus says to use LCB@uvm.edu for ALL
+  # course-related communication, so that's what's here rather than a
+  # guessed address. No office/office_hours were listed for Dr. Thrailkill
+  # either, left blank rather than guessed. Grad TA is Emery W. Harlan
+  # (office hours Tuesdays, day TBD as of the syllabus) plus 9 additional
+  # undergrad TAs -- config.yaml's schema only has room for one instructor
+  # contact, so they're not modeled here individually.
+  instructor:
+    name: "Dr. Eric A. Thrailkill"
+    email: "LCB@uvm.edu"
+    office: ""
+    office_hours: ""
+
+- tag: CHEM-1400
+  name: "Gen Chem 1400"
+  match: ["CHEM 1400-A", "CHEM1400A"]   # "CHEM1400A" confirmed 2026-08-21 from real
+                                        # feed LOCATION text (no space/hyphen there)
+  meets: [Mon, Wed, Fri]
+  time: "1:10 pm - 2:00 pm"
+  room: INNOV E102
+  address: "82 University Place, Burlington, VT 05405"   # Innovation Hall
+  grades_url: ""
+  brightspace_url: ""
+  instructor:
+    name: "Dr. Erik Ruggles"
+    email: "Erik.Ruggles@uvm.edu"
+    office: "Innovation E333"
+    office_hours: "Mon/Wed/Fri 10:00am-12:30pm, Tue/Thu 3:00-4:00pm, or any agreeable time over Teams"
+
+- tag: CDAE-1020
+  name: "World Food,Pop & Develop"
+  match: ["CDAE 1020"]
+  meets: [Tue, Thu]
+  time: "1:15 pm - 2:30 pm"
+  room: ML SCI 235
+  address: "109 Carrigan Drive, Burlington, VT 05405"   # Marsh Life Science Building (confirmed by Charles)
+  grades_url: ""
+  brightspace_url: ""
+
+- tag: ANTH-1800
+  name: "Archaeological Anthropology"
+  match: ["ANTH 1800"]
+  meets: [Tue, Thu]
+  time: "2:50 pm - 4:05 pm"
+  room: FLEMIN 101
+  address: "61 Colchester Ave, Burlington, VT 05405"   # Fleming Museum
+  grades_url: ""
+  brightspace_url: ""
+
+- tag: CHEM-1400-EVE
+  name: "Chem Lecture"
+  match: ["CHEM 1400-A"]
+  meets: [Mon]
+  time: "6:00 pm - 9:00 pm"
+  room: BLLNGS LH
+  address: "48 University Place, Burlington, VT 05405"   # Billings
+  same_class_as: CHEM-1400   # confirmed 2026-08-23 -- same Brightspace course
+                              # and grade as CHEM-1400, just the Monday evening
+                              # session. Never scraped or shown separately in
+                              # Grades; grades_url/brightspace_url intentionally
+                              # left blank here -- set them on CHEM-1400 instead.
+  grades_url: ""
+  brightspace_url: ""
+  instructor:
+    name: "Dr. Erik Ruggles"
+    email: "Erik.Ruggles@uvm.edu"
+    office: "Innovation E333"
+    office_hours: "Mon/Wed/Fri 10:00am-12:30pm, Tue/Thu 3:00-4:00pm, or any agreeable time over Teams"
+
+- tag: CHEM-1400-L51
+  name: "Chem Lab"
+  match: ["CHEM 1400-L51"]
+  meets: [Thu]
+  time: "6:00 pm - 8:45 pm"
+  room: DISCOV W205
+  address: "82 University Place, Burlington, VT 05405"   # Discovery Hall
+  grades_url: "https://brightspace.uvm.edu/d2l/lms/grades/my_grades/main.d2l?ou=172457"
+  brightspace_url: ""
+  # From the Fall 2026 CHEM 1400 Lab syllabus (2026-08-29). Your actual TA
+  # was "TBD" as of that syllabus -- office_hours says so literally rather
+  # than guessing a schedule; update name/email/office_hours once your TA
+  # and their office hours are posted on Brightspace.
+  instructor:
+    name: "Christine Cardillo (Lab Coordinator)"
+    email: "Christine.Cardillo@uvm.edu"
+    office: "W303A Discovery Hall"
+    office_hours: "Your lab TA was TBD as of the syllabus -- TA office hours (in W203 Discovery Hall) to be posted on Brightspace"
+
+- tag: CS-1210
+  name: "Computer Programming I"
+  # No CS1210 event has appeared in the Brightspace feed yet (nothing has as of
+  # 2026-08-21 except Chem). Listing several plausible forms as a safety net,
+  # same lesson learned from Chem: the real feed put the code as "CHEM1400A"
+  # with no space/hyphen. Worst case an unmatched guess just fails silently
+  # (tag stays null) -- run --inspect once CS events appear and fix these to
+  # match whatever's actually there. Do not treat these as verified.
+  match: ["CS 1210", "CS1210", "CS 1210-G", "CS1210G"]
+  meets: [Tue, Thu]
+  time: "4:25 pm - 5:40 pm"
+  room: LAFAYE L403
+  address: ""   # Lafayette Hall -- left blank, not guessed; fill in if you want
+                # a directions pill on this class's schedule blocks
+  grades_url: ""
+  brightspace_url: ""
+  instructor:
+    name: "Sami Connolly"
+    email: "Samantha.Connolly@uvm.edu"
+    office: "Innovation E305"
+    office_hours: "Drop-in: Tue 1:30-2:00pm, Thu 10:30-11:30am"
+
+# ---------------------------------------------------------------------------
+# Workspaces become colored sections and calendar layers.
+# ---------------------------------------------------------------------------
+workspaces:
+- id: school
+  name: UVM
+  accent: "#007155"             # replace with the exact UVM green from uvm.edu
+  panels: [due, docs]
+  links:
+  - {label: "Brightspace", url: "https://brightspace.uvm.edu"}
+  - {label: "myUVM", url: "https://experience.elluciancloud.com/uvm/?category=home"}
+  - {label: "Webmail", url: ""}
+  - {label: "Registrar", url: "https://www.uvm.edu/registrar"}            # add/drop + withdrawal deadlines
+  - {label: "Course search", url: "https://soc.uvm.edu"}
+  - label: UVM printing
+    url: https://uniprint.uvm.edu/myprintcenter/#
+
+  - label: Aleks for Chem
+    url: https://brightspace.uvm.edu/d2l/common/dialogs/quickLink/quickLink.d2l?ou=172357&type=content&rcode=17AE1E79-1005-4AF2-9068-776DD68288C1-1037457
+- id: lab
+  name: Lab
+  accent: "#6D4AA6"
+  panels: [calendar]
+  links:
+  - {label: "PubMed", url: "https://pubmed.ncbi.nlm.nih.gov"}
+  - label: Glass Brain Lab
+    url: https://www.uvm.edu/~brainlab/
+
+  - label: GitHub
+    url: https://github.com
+- id: personal
+  name: Personal
+  accent: "#B0603A"
+  default: true                 # catches anything unmatched
+  panels: [calendar]
+  links:
+  - label: Movies+Shows
+    url: https://fmhy.net/video
+  - label: TailScale
+    url: https://login.tailscale.com/a/bbd49c9018406
+  - label: Annas Archive
+    url: https://annas-archive.gl
+  - label: Netflix
+    url: https://www.netflix.com/browse
+feed_workspaces:
+  Brightspace: school
+  Outlook: school
+  Uvm Academic: school
+  Lab: lab
+  Personal: personal
+  Class schedule: school   # synthesized recurring class blocks (see build_dashboard.py) --
+                            # not a live feed, but should still look like a school item
+
+# ---------------------------------------------------------------------------
+# Google Calendar reminders.
+#
+# A dated to-do (has a `due`) gets a Google Calendar event with a popup
+# reminder at `send_time` on its due date — created the moment you save the
+# to-do, not on a timer, so it works even while this PC (or serve.py) is
+# off; Google's own servers deliver the notification. A to-do can override
+# send_time for itself via its own remind_time field. Undated to-dos never
+# get an event — there's no date to put it on. Marking a to-do done, or
+# clearing its due date, deletes its event.
+#
+# Needs a one-time Google Cloud Console OAuth setup — see BUILD.md, "Google
+# Calendar reminders" for the exact click-by-click steps, and
+# scripts/google_calendar_auth.py for the script that finishes it. With
+# GOOGLE_CALENDAR_CLIENT_ID / _CLIENT_SECRET / _REFRESH_TOKEN unset in .env,
+# the to-do still saves normally, it just won't reach your phone, and the
+# dashboard says so rather than pretending it worked.
+# ---------------------------------------------------------------------------
+reminders:
+  enabled: true
+  calendar_id: "primary"        # which Google Calendar to write events to
+  send_time: "08:00"            # default 24h HH:MM. A to-do can override this
+                                 # for itself via its own remind_time field.
+
+# Countdown panel. Anything here shows days remaining on the dashboard.
+milestones:
+- {label: "First day of classes", date: "2026-08-31"}
+- {label: "Last day to add without instructor permission", date: "2026-09-04"}
+- {label: "Add/drop deadline", date: "2026-09-14"}
+- {label: "Withdrawal deadline", date: "2026-11-02"}

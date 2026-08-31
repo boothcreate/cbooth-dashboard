@@ -1,0 +1,17 @@
+.env
+data/*.json
+data/grades_debug_*.html
+!data/.gitkeep
+dashboard/index.html
+dashboard/manifest.webmanifest
+__pycache__/
+.venv/
+.grades_chrome_profile/
+.claude/settings.local.json
+
+# Superseded by git history -- these were manual snapshots taken before git
+# existed in this project. Kept on disk for now, not tracked.
+.backup-before-reminders-2026-08-11/
+config.backup.yaml
+config.yaml.txt
+uvm-planner.zip

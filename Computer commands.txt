@@ -1,0 +1,5 @@
+Computer commands
+central dashboard:
+  - stop autostart: delete %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\UVM Dashboard.lnk
+  - Stop it running right now: Get-Process pythonw | Stop-Process
+  - make sure its running:  http://127.0.0.1:8787

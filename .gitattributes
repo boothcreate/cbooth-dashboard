@@ -1,0 +1,9 @@
+# Normalize line endings on checkout to whatever this platform uses (CRLF on
+# Windows), stored as LF in the repo -- stops every file showing a spurious
+# "will be replaced by CRLF" warning and a full-file diff the first time git
+# touches something that predates this repo.
+* text=auto eol=native
+
+# Binary files -- never touch line endings, never diff as text.
+*.png binary
+*.ico binary
